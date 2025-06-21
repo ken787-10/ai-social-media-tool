@@ -85,6 +85,6 @@ function extractToken(req: VercelRequest): string | null {
 }
 
 function isValidStyle(style: string): boolean {
-  const validStyles: StyleType[] = ['aska', 'kuwata', 'influencer', 'omae', 'instagram'];
+  const validStyles: StyleType[] = ['aska', 'kuwata', 'mission', 'omae', 'instagram'];
   return validStyles.includes(style as StyleType);
 }

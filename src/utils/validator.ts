@@ -1,7 +1,7 @@
 import { StyleType } from '../types';
 
 const MAX_INPUT_LENGTH = 1000;
-const VALID_STYLES: StyleType[] = ['aska', 'kuwata', 'influencer', 'omae', 'instagram'];
+const VALID_STYLES: StyleType[] = ['aska', 'kuwata', 'mission', 'omae', 'instagram'];
 
 export function validateTextInput(text: string): { valid: boolean; error?: string } {
   if (!text || typeof text !== 'string') {
