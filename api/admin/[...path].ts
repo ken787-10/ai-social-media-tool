@@ -84,14 +84,23 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, path: stri
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  const style = path[1] as StyleType;
+  const subPath = path[1];
   const action = path[2];
 
   // GET /api/admin/prompts - すべてのプロンプトを取得
-  if (req.method === 'GET' && !style) {
+  if (req.method === 'GET' && !subPath) {
     const prompts = promptStorage.getAllPrompts();
     return res.status(200).json(prompts);
   }
+
+  // POST /api/admin/prompts/reset-all - すべてのプロンプトをリセット
+  if (req.method === 'POST' && subPath === 'reset-all') {
+    await promptStorage.resetAllPrompts();
+    return res.status(200).json({ success: true });
+  }
+
+  // ここから先はスタイル名として扱う
+  const style = subPath as StyleType;
 
   // PUT /api/admin/prompts/:style - プロンプトを更新
   if (req.method === 'PUT' && style && !action) {
@@ -108,12 +117,6 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, path: stri
   // POST /api/admin/prompts/:style/reset - プロンプトをリセット
   if (req.method === 'POST' && style && action === 'reset') {
     await promptStorage.resetPrompt(style);
-    return res.status(200).json({ success: true });
-  }
-
-  // POST /api/admin/prompts/reset-all - すべてのプロンプトをリセット
-  if (req.method === 'POST' && style === 'reset-all') {
-    await promptStorage.resetAllPrompts();
     return res.status(200).json({ success: true });
   }
 
