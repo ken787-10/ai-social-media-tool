@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // GET /api/admin/prompts - すべてのプロンプトを取得
     if (req.method === 'GET' && !action && !style) {
-      const prompts = promptStorage.getAllPrompts();
+      const prompts = await promptStorage.getAllPrompts();
       return res.status(200).json(prompts);
     }
 

@@ -895,17 +895,27 @@ class PromptStorage {
 Instagramは最大400文字までの投稿が可能です。具体的なエピソードや感情を込めたストーリーを伝えます。`
   };
 
+  private initialized = false;
+  private initializePromise: Promise<void> | null = null;
+
   constructor() {
     this.filePath = process.env.VERCEL 
       ? '/tmp/prompts.json'  // Vercel環境では/tmpを使用
       : path.join(process.cwd(), 'data', 'prompts.json');
     
     // 初期化を非同期で実行
-    this.initialize();
+    this.initializePromise = this.initialize();
   }
 
   private async initialize(): Promise<void> {
     await this.loadPrompts();
+    this.initialized = true;
+  }
+
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initialized && this.initializePromise) {
+      await this.initializePromise;
+    }
   }
 
   private async ensureDataDir(): Promise<void> {
@@ -925,41 +935,29 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
       this.initializeDefaults();
       
       // 環境変数からプロンプトを上書き
-      if (process.env.PROMPT_ASKA) {
-        this.prompts.set('aska', {
-          style: 'aska',
-          prompt: process.env.PROMPT_ASKA,
-          updatedAt: new Date().toISOString()
-        });
-      }
-      if (process.env.PROMPT_KUWATA) {
-        this.prompts.set('kuwata', {
-          style: 'kuwata',
-          prompt: process.env.PROMPT_KUWATA,
-          updatedAt: new Date().toISOString()
-        });
-      }
-      if (process.env.PROMPT_MISSION) {
-        this.prompts.set('mission', {
-          style: 'mission',
-          prompt: process.env.PROMPT_MISSION,
-          updatedAt: new Date().toISOString()
-        });
-      }
-      if (process.env.PROMPT_OMAE) {
-        this.prompts.set('omae', {
-          style: 'omae',
-          prompt: process.env.PROMPT_OMAE,
-          updatedAt: new Date().toISOString()
-        });
-      }
-      if (process.env.PROMPT_INSTAGRAM) {
-        this.prompts.set('instagram', {
-          style: 'instagram',
-          prompt: process.env.PROMPT_INSTAGRAM,
-          updatedAt: new Date().toISOString()
-        });
-      }
+      const envMappings = [
+        { envKey: 'PROMPT_ASKA', style: 'aska' as StyleType },
+        { envKey: 'PROMPT_KUWATA', style: 'kuwata' as StyleType },
+        { envKey: 'PROMPT_MISSION', style: 'mission' as StyleType },
+        { envKey: 'PROMPT_OMAE', style: 'omae' as StyleType },
+        { envKey: 'PROMPT_INSTAGRAM', style: 'instagram' as StyleType }
+      ];
+
+      envMappings.forEach(({ envKey, style }) => {
+        const envValue = process.env[envKey];
+        if (envValue) {
+          this.prompts.set(style, {
+            style,
+            prompt: envValue,
+            updatedAt: new Date().toISOString()
+          });
+          logger.info(`Loaded prompt from environment variable`, { 
+            envKey, 
+            style,
+            promptLength: envValue.length 
+          });
+        }
+      });
       
       // ローカル環境ではファイルからも読み込み
       if (!process.env.VERCEL) {
@@ -1003,16 +1001,30 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
     }
   }
 
-  getPrompt(style: StyleType): string {
+  async getPrompt(style: StyleType): Promise<string> {
+    await this.ensureInitialized();
+    
     // プロンプトがまだロードされていない場合はデフォルトを使用
     if (this.prompts.size === 0) {
       return this.defaultPrompts[style];
     }
     const stylePrompt = this.prompts.get(style);
-    return stylePrompt?.prompt || this.defaultPrompts[style];
+    const prompt = stylePrompt?.prompt || this.defaultPrompts[style];
+    
+    // デバッグログ
+    logger.info('Getting prompt', {
+      style,
+      hasStylePrompt: !!stylePrompt,
+      promptLength: prompt?.length || 0,
+      isFromEnv: !!process.env[`PROMPT_${style.toUpperCase()}`]
+    });
+    
+    return prompt;
   }
 
-  getAllPrompts(): StylePrompt[] {
+  async getAllPrompts(): Promise<StylePrompt[]> {
+    await this.ensureInitialized();
+    
     // プロンプトがまだロードされていない場合はデフォルトを返す
     if (this.prompts.size === 0) {
       this.initializeDefaults();

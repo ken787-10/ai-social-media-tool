@@ -25,7 +25,7 @@ export async function generateContent(
   const estimatedTokens = Math.ceil(input.length / 2) + 500; // 入力 + 出力の推定
   await usageTracker.checkTokenLimit(userId, estimatedTokens);
   
-  const systemPrompt = promptStorage.getPrompt(style);
+  const systemPrompt = await promptStorage.getPrompt(style);
   const userPrompt = isImageDescription
     ? `この画像について、指定されたスタイルで${maxLength}文字以内のコメントを書いてください。画像の内容: ${input}`
     : `次のテーマについて、指定されたスタイルで${maxLength}文字以内の投稿を書いてください: ${input}`;
