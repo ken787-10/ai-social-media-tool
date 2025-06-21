@@ -32,6 +32,14 @@ export const CONTENT_LENGTH = {
   '100': 280
 } as const;
 
+// Instagram用の文字数制限
+export const INSTAGRAM_CONTENT_LENGTH = {
+  '30': 120,
+  '50': 200,
+  '70': 280,
+  '100': 400
+} as const;
+
 // スタイル名の日本語マッピング
 export const STYLE_NAMES = {
   aska: 'ASKA風',

@@ -1,6 +1,6 @@
 import { Client, WebhookEvent, TextMessage, MessageAPIResponseBase } from '@line/bot-sdk';
 import { StyleType } from '../types';
-import { STYLE_NAMES, CONTENT_LENGTH } from '../config/constants';
+import { STYLE_NAMES, CONTENT_LENGTH, INSTAGRAM_CONTENT_LENGTH } from '../config/constants';
 import sessionManager from '../services/sessionManager';
 import { generateContent, analyzeImage } from '../services/openaiService';
 import { detectStyle, detectContentLength } from '../utils/styleDetector';
@@ -114,7 +114,9 @@ async function handleTextMessage(event: any, userId: string): Promise<MessageAPI
     sessionManager.deleteSession(userId);
     
     // 文字数情報を追加
-    const maxLength = CONTENT_LENGTH[length];
+    const maxLength = style === 'instagram' 
+      ? INSTAGRAM_CONTENT_LENGTH[length]
+      : CONTENT_LENGTH[length];
     const charCountInfo = `\n\n📝 文字数: ${content.length}/${maxLength}文字`;
     
     return client.replyMessage(event.replyToken, {
@@ -130,7 +132,9 @@ async function handleTextMessage(event: any, userId: string): Promise<MessageAPI
   const content = await generateContent(userText, style, length, userId);
   
   // 文字数情報を追加
-  const maxLength = CONTENT_LENGTH[length];
+  const maxLength = style === 'instagram' 
+    ? INSTAGRAM_CONTENT_LENGTH[length]
+    : CONTENT_LENGTH[length];
   const charCountInfo = `\n\n📝 文字数: ${content.length}/${maxLength}文字`;
   
   return client.replyMessage(event.replyToken, {

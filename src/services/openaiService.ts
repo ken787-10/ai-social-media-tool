@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { StyleType } from '../types';
-import { CONTENT_LENGTH } from '../config/constants';
+import { CONTENT_LENGTH, INSTAGRAM_CONTENT_LENGTH } from '../config/constants';
 import usageTracker from '../utils/usageTracker';
 import promptStorage from './promptStorage';
 import logger from '../utils/logger';
@@ -16,7 +16,10 @@ export async function generateContent(
   userId: string,
   isImageDescription: boolean = false
 ): Promise<string> {
-  const maxLength = CONTENT_LENGTH[lengthPercentage];
+  // Instagramの場合は専用の文字数制限を使用
+  const maxLength = style === 'instagram' 
+    ? INSTAGRAM_CONTENT_LENGTH[lengthPercentage]
+    : CONTENT_LENGTH[lengthPercentage];
   
   // トークン使用量の事前チェック（推定）
   const estimatedTokens = Math.ceil(input.length / 2) + 500; // 入力 + 出力の推定
@@ -127,7 +130,34 @@ function formatForInstagram(content: string): string {
   // 絵文字追加
   formatted = addEmojis(formatted);
   
-  return `${formatted}\n\n.\n.\n.\n${hashtags.join(' ')}`;
+  // 最終的な投稿内容を組み立て
+  const separator = '\n\n.\n.\n.\n';
+  const hashtagsText = hashtags.join(' ');
+  const fullPost = `${formatted}${separator}${hashtagsText}`;
+  
+  // 400文字を超える場合はハッシュタグを調整
+  if (fullPost.length > 400) {
+    const availableSpace = 400 - formatted.length - separator.length;
+    if (availableSpace > 20) {
+      // 最低限のスペースがあればハッシュタグを含める
+      const limitedHashtags = [];
+      let currentLength = 0;
+      for (const tag of hashtags) {
+        if (currentLength + tag.length + 1 <= availableSpace) {
+          limitedHashtags.push(tag);
+          currentLength += tag.length + 1;
+        } else {
+          break;
+        }
+      }
+      return `${formatted}${separator}${limitedHashtags.join(' ')}`;
+    } else {
+      // スペースがない場合はハッシュタグを省略
+      return formatted;
+    }
+  }
+  
+  return fullPost;
 }
 
 function generateHashtags(content: string): string[] {
