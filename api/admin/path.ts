@@ -8,8 +8,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const path = req.query.path as string | string[];
-  const pathArray = Array.isArray(path) ? path : [path];
+  const pathQuery = req.query.path;
+  const pathArray = Array.isArray(pathQuery) ? pathQuery : [pathQuery];
   const endpoint = pathArray?.[0];
 
   // CORS設定
@@ -71,7 +71,7 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray: string[]) {
+async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray: (string | string[])[]) {
   const token = extractToken(req);
 
   if (!token) {
@@ -84,8 +84,8 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray:
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  const subPath = pathArray[1];
-  const action = pathArray[2];
+  const subPath = pathArray[1] as string;
+  const action = pathArray[2] as string;
 
   // GET /api/admin/prompts - すべてのプロンプトを取得
   if (req.method === 'GET' && !subPath) {
@@ -99,11 +99,15 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray:
     return res.status(200).json({ success: true });
   }
 
-  // ここから先はスタイル名として扱う
+  // スタイル名として扱う
+  if (!isValidStyle(subPath)) {
+    return res.status(400).json({ error: 'Invalid style' });
+  }
+  
   const style = subPath as StyleType;
 
   // PUT /api/admin/prompts/:style - プロンプトを更新
-  if (req.method === 'PUT' && style && !action) {
+  if (req.method === 'PUT' && !action) {
     const { prompt } = req.body;
     
     if (!prompt) {
@@ -115,7 +119,7 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray:
   }
 
   // POST /api/admin/prompts/:style/reset - プロンプトをリセット
-  if (req.method === 'POST' && style && action === 'reset') {
+  if (req.method === 'POST' && action === 'reset') {
     await promptStorage.resetPrompt(style);
     return res.status(200).json({ success: true });
   }
@@ -136,4 +140,9 @@ function extractToken(req: VercelRequest): string | null {
   }
 
   return parts[1];
+}
+
+function isValidStyle(style: string): boolean {
+  const validStyles: StyleType[] = ['aska', 'kuwata', 'influencer', 'omae', 'instagram'];
+  return validStyles.includes(style as StyleType);
 }
