@@ -8,8 +8,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const path = req.query.path as string[];
-  const endpoint = path?.[0];
+  const path = req.query.path as string | string[];
+  const pathArray = Array.isArray(path) ? path : [path];
+  const endpoint = pathArray?.[0];
 
   // CORS設定
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return handleVerify(req, res);
       
       case 'prompts':
-        return handlePrompts(req, res, path);
+        return handlePrompts(req, res, pathArray);
       
       default:
         return res.status(404).json({ error: 'Endpoint not found' });
