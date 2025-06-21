@@ -1,4 +1,4 @@
-export type StyleType = 'aska' | 'kuwata' | 'influencer' | 'omae' | 'instagram';
+export type StyleType = 'aska' | 'kuwata' | 'mission' | 'omae' | 'instagram';
 
 export interface UserSession {
   userId: string;

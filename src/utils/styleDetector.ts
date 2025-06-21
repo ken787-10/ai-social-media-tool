@@ -27,8 +27,15 @@ export function detectStyle(text: string): StyleType {
     return 'instagram';
   }
   
-  // デフォルトはインフルエンサー風
-  return 'influencer';
+  // ミッションインポッシブル風の検出
+  if (lowerText.includes('ミッション') || lowerText.includes('mission') || 
+      lowerText.includes('トム') || lowerText.includes('トムクルーズ') || 
+      lowerText.includes('imp') || lowerText.includes('インポッシブル')) {
+    return 'mission';
+  }
+  
+  // デフォルトはミッションインポッシブル風
+  return 'mission';
 }
 
 export function detectContentLength(text: string): keyof typeof import('../config/constants')['CONTENT_LENGTH'] {

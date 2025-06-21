@@ -36,7 +36,7 @@ export const CONTENT_LENGTH = {
 export const STYLE_NAMES = {
   aska: 'ASKA風',
   kuwata: '桑田佳祐風',
-  influencer: 'インフルエンサー風',
+  mission: 'ミッションインポッシブル風',
   omae: '大前研一風',
   instagram: 'インスタグラム投稿用'
 } as const;
