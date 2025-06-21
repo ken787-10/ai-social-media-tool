@@ -239,7 +239,7 @@
     <div id="statusMessage" class="status-message"></div>
     
     <script>
-        const API_BASE = '/api';
+        const API_BASE = '/api/admin';
         let authToken = localStorage.getItem('adminToken');
         
         // 初期化
@@ -249,7 +249,7 @@
         
         async function checkAuth() {
             try {
-                const response = await fetch(`${API_BASE}/admin/verify`, {
+                const response = await fetch(`${API_BASE}/verify`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     }
@@ -272,7 +272,7 @@
             const password = document.getElementById('adminPassword').value;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/login`, {
+                const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -309,7 +309,7 @@
         
         async function loadPrompts() {
             try {
-                const response = await fetch(`${API_BASE}/admin/prompts`, {
+                const response = await fetch(`${API_BASE}/prompts`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     }
@@ -372,7 +372,7 @@
             const prompt = textarea.value;
             
             try {
-                const response = await fetch(`${API_BASE}/admin/prompts/${style}`, {
+                const response = await fetch(`${API_BASE}/prompts?style=${style}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -398,7 +398,7 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE}/admin/prompts/${style}/reset`, {
+                const response = await fetch(`${API_BASE}/prompts?style=${style}&action=reset`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
@@ -422,7 +422,7 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE}/admin/prompts/reset-all`, {
+                const response = await fetch(`${API_BASE}/prompts?action=reset-all`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`

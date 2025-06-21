@@ -3,7 +3,7 @@
     "api/webhook.ts": {
       "maxDuration": 10
     },
-    "api/admin/path.ts": {
+    "api/admin/*.ts": {
       "maxDuration": 10
     }
   },
@@ -11,10 +11,6 @@
     {
       "source": "/",
       "destination": "/api/index"
-    },
-    {
-      "source": "/api/admin/:path*",
-      "destination": "/api/admin/path?path=$path"
     },
     {
       "source": "/api/(.*)",
