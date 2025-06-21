@@ -51,15 +51,28 @@ export async function generateContent(
       style,
       inputLength: input.length,
       outputLength: content.length,
-      tokens: actualTokens
+      tokens: actualTokens,
+      requestedLength: maxLength
     });
+    
+    // 文字数チェックと調整
+    let finalContent = content;
+    if (content.length > maxLength) {
+      // 文字数オーバーの場合は切り詰める
+      finalContent = content.substring(0, maxLength - 3) + '...';
+      logger.info('Content truncated', {
+        userId,
+        originalLength: content.length,
+        truncatedLength: finalContent.length
+      });
+    }
     
     // Instagram用の追加処理
     if (style === 'instagram') {
-      return formatForInstagram(content);
+      return formatForInstagram(finalContent);
     }
     
-    return content;
+    return finalContent;
   } catch (error) {
     logger.error('OpenAI API error', { error, userId, style });
     throw new Error('コンテンツの生成に失敗しました。しばらく後に再度お試しください。');
