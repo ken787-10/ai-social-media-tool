@@ -71,7 +71,7 @@ async function handleVerify(req: VercelRequest, res: VercelResponse) {
   }
 }
 
-async function handlePrompts(req: VercelRequest, res: VercelResponse, path: string[]) {
+async function handlePrompts(req: VercelRequest, res: VercelResponse, pathArray: string[]) {
   const token = extractToken(req);
 
   if (!token) {
@@ -84,8 +84,8 @@ async function handlePrompts(req: VercelRequest, res: VercelResponse, path: stri
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  const subPath = path[1];
-  const action = path[2];
+  const subPath = pathArray[1];
+  const action = pathArray[2];
 
   // GET /api/admin/prompts - すべてのプロンプトを取得
   if (req.method === 'GET' && !subPath) {
