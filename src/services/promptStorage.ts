@@ -1000,36 +1000,15 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
     }
   }
 
-  async getPrompt(style: StyleType): Promise<string> {
-    await this.ensureInitialized();
-    
-    // Vercel環境では常に環境変数を優先的にチェック
-    if (process.env.VERCEL) {
-      const envKey = `PROMPT_${style.toUpperCase()}`;
-      const envValue = process.env[envKey];
-      if (envValue) {
-        logger.info('Using prompt from environment variable', {
-          style,
-          envKey,
-          promptLength: envValue.length
-        });
-        return envValue;
-      }
-    }
-    
-    // プロンプトがまだロードされていない場合はデフォルトを使用
-    if (this.prompts.size === 0) {
-      return this.defaultPrompts[style];
-    }
-    const stylePrompt = this.prompts.get(style);
-    const prompt = stylePrompt?.prompt || this.defaultPrompts[style];
+  getPrompt(style: StyleType): string {
+    // シンプルにデフォルトプロンプトを返す
+    const prompt = this.defaultPrompts[style];
     
     // デバッグログ
     logger.info('Getting prompt', {
       style,
-      hasStylePrompt: !!stylePrompt,
       promptLength: prompt?.length || 0,
-      isFromEnv: !!process.env[`PROMPT_${style.toUpperCase()}`]
+      promptPreview: prompt?.substring(0, 50) + '...'
     });
     
     return prompt;

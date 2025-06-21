@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const prompts: Record<string, any> = {};
     
     for (const style of styles) {
-      const prompt = await promptStorage.getPrompt(style);
+      const prompt = promptStorage.getPrompt(style);
       prompts[style] = {
         length: prompt.length,
         preview: prompt.substring(0, 100) + '...',
