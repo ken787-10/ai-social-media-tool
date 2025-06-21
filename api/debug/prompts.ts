@@ -7,7 +7,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const debugInfo = {
+  const debugInfo: any = {
     environment: {
       NODE_ENV: process.env.NODE_ENV,
       VERCEL: process.env.VERCEL,
@@ -27,7 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const styles: StyleType[] = ['aska', 'kuwata', 'mission', 'omae', 'instagram'];
   
   for (const style of styles) {
-    const prompt = await promptStorage.getPrompt(style);
+    const prompt = promptStorage.getPrompt(style);
     debugInfo.prompts[style] = {
       length: prompt?.length || 0,
       preview: prompt?.substring(0, 100) + '...',
