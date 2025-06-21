@@ -57,16 +57,63 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
 
   private async loadPrompts(): Promise<void> {
     try {
-      const data = await fs.readFile(this.filePath, 'utf-8');
-      const promptsArray: StylePrompt[] = JSON.parse(data);
+      // まずデフォルトを初期化
+      this.initializeDefaults();
       
-      promptsArray.forEach(prompt => {
-        this.prompts.set(prompt.style, prompt);
-      });
+      // 環境変数からプロンプトを上書き
+      if (process.env.PROMPT_ASKA) {
+        this.prompts.set('aska', {
+          style: 'aska',
+          prompt: process.env.PROMPT_ASKA,
+          updatedAt: new Date().toISOString()
+        });
+      }
+      if (process.env.PROMPT_KUWATA) {
+        this.prompts.set('kuwata', {
+          style: 'kuwata',
+          prompt: process.env.PROMPT_KUWATA,
+          updatedAt: new Date().toISOString()
+        });
+      }
+      if (process.env.PROMPT_MISSION) {
+        this.prompts.set('mission', {
+          style: 'mission',
+          prompt: process.env.PROMPT_MISSION,
+          updatedAt: new Date().toISOString()
+        });
+      }
+      if (process.env.PROMPT_OMAE) {
+        this.prompts.set('omae', {
+          style: 'omae',
+          prompt: process.env.PROMPT_OMAE,
+          updatedAt: new Date().toISOString()
+        });
+      }
+      if (process.env.PROMPT_INSTAGRAM) {
+        this.prompts.set('instagram', {
+          style: 'instagram',
+          prompt: process.env.PROMPT_INSTAGRAM,
+          updatedAt: new Date().toISOString()
+        });
+      }
       
-      logger.info('Prompts loaded from file', { count: promptsArray.length });
+      // ローカル環境ではファイルからも読み込み
+      if (!process.env.VERCEL) {
+        try {
+          const data = await fs.readFile(this.filePath, 'utf-8');
+          const promptsArray: StylePrompt[] = JSON.parse(data);
+          
+          promptsArray.forEach(prompt => {
+            this.prompts.set(prompt.style, prompt);
+          });
+          
+          logger.info('Prompts loaded from file', { count: promptsArray.length });
+        } catch (error) {
+          logger.info('No existing prompts file, using defaults');
+        }
+      }
     } catch (error) {
-      logger.info('No existing prompts file, using defaults');
+      logger.error('Failed to load prompts', { error });
       this.initializeDefaults();
     }
   }
@@ -116,8 +163,11 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
       updatedAt: new Date().toISOString()
     });
     
-    await this.savePrompts();
-    logger.info('Prompt updated', { style });
+    // Vercel環境では保存しない（メモリ内のみで管理）
+    if (!process.env.VERCEL) {
+      await this.savePrompts();
+    }
+    logger.info('Prompt updated', { style, isVercel: !!process.env.VERCEL });
   }
 
   async resetPrompt(style: StyleType): Promise<void> {

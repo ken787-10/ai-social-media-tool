@@ -214,6 +214,17 @@
     <div class="container">
         <h1>LINE Style Bot 管理画面</h1>
         
+        <!-- Vercel環境での警告 -->
+        <div id="vercelWarning" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0; display: none;">
+            <strong>⚠️ Vercel環境での注意:</strong><br>
+            Vercel環境では、プロンプトの変更は一時的です。永続的に変更するには：<br>
+            1. Vercelダッシュボード → Settings → Environment Variables<br>
+            2. 以下の変数を追加：<br>
+            <code>PROMPT_ASKA</code>, <code>PROMPT_KUWATA</code>, <code>PROMPT_MISSION</code>, <code>PROMPT_OMAE</code>, <code>PROMPT_INSTAGRAM</code><br>
+            3. 各スタイルのプロンプトを値に設定<br>
+            4. プロジェクトを再デプロイ
+        </div>
+        
         <!-- 認証セクション -->
         <div id="authSection" class="auth-section">
             <form class="auth-form" onsubmit="handleLogin(event)">
@@ -245,6 +256,11 @@
         // 初期化
         if (authToken) {
             checkAuth();
+        }
+        
+        // Vercel環境のチェック
+        if (window.location.hostname.includes('vercel.app')) {
+            document.getElementById('vercelWarning').style.display = 'block';
         }
         
         async function checkAuth() {
