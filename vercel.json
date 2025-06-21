@@ -1,0 +1,20 @@
+{
+  "functions": {
+    "api/webhook.ts": {
+      "maxDuration": 10
+    },
+    "api/admin/[...path].ts": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}

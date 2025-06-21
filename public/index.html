@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Style Tweet Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 60px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .feature-desc {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .cta {
+            margin-top: 40px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #06C755;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #05a548;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .qr-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status status-active">🟢 稼働中</div>
+        <h1>LINE Style Tweet Bot</h1>
+        <p class="subtitle">
+            AIが著名人のスタイルで<br>
+            ツイート・インスタ投稿を自動生成
+        </p>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">5つのスタイル</div>
+                <div class="feature-desc">
+                    ASKA、桑田佳祐、インフルエンサー、大前研一、Instagram
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">📝</div>
+                <div class="feature-title">文字数制御</div>
+                <div class="feature-desc">
+                    30%、50%、70%、100%の4段階で調整可能
+                </div>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🖼️</div>
+                <div class="feature-title">画像解析</div>
+                <div class="feature-desc">
+                    送信された画像をAIが解析してコメント生成
+                </div>
+            </div>
+        </div>
+        
+        <div class="qr-section">
+            <h2>使い方</h2>
+            <p style="margin: 20px 0;">
+                1. LINE公式アカウントを友だち追加<br>
+                2. テキストまたは画像を送信<br>
+                3. AIが自動でスタイル別の投稿を生成
+            </p>
+            
+            <p style="color: #666; font-size: 0.9em;">
+                例：「ASKA風で今日の天気について」<br>
+                「桑田風で30%で夏の思い出」
+            </p>
+        </div>
+        
+        <div class="cta">
+            <a href="/api/admin" class="btn btn-secondary">管理画面</a>
+            <a href="/api/health" class="btn btn-secondary">ステータス</a>
+        </div>
+        
+        <p style="margin-top: 40px; color: #999; font-size: 0.8em;">
+            Powered by OpenAI GPT-4 & LINE Messaging API
+        </p>
+    </div>
+</body>
+</html>

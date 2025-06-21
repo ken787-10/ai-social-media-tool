@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Style Bot - 管理画面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
+            
+            .logout-btn {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .auth-section {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .auth-form input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .auth-form button {
+            padding: 12px;
+            background: #06C755;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .auth-form button:hover {
+            background: #05a548;
+        }
+        
+        .prompt-section {
+            display: none;
+        }
+        
+        .prompt-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+        
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .style-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .style-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .badge-aska { background: #9B59B6; }
+        .badge-kuwata { background: #3498DB; }
+        .badge-influencer { background: #E74C3C; }
+        .badge-omae { background: #34495E; }
+        .badge-instagram { background: #E1306C; }
+        
+        .prompt-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        
+        .prompt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save {
+            background: #06C755;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: #05a548;
+        }
+        
+        .btn-reset {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .btn-reset:hover {
+            background: #d0d0d0;
+        }
+        
+        .status-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .status-success {
+            background: #27AE60;
+        }
+        
+        .status-error {
+            background: #E74C3C;
+        }
+        
+        .updated-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 20px;
+            background: #666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LINE Style Bot 管理画面</h1>
+        
+        <!-- 認証セクション -->
+        <div id="authSection" class="auth-section">
+            <form class="auth-form" onsubmit="handleLogin(event)">
+                <input type="password" id="adminPassword" placeholder="管理者パスワードを入力" required>
+                <button type="submit">ログイン</button>
+            </form>
+        </div>
+        
+        <!-- プロンプト管理セクション -->
+        <div id="promptSection" class="prompt-section">
+            <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+            
+            <div id="promptCards"></div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-reset" onclick="resetAllPrompts()">
+                    すべてのプロンプトをデフォルトに戻す
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="statusMessage" class="status-message"></div>
+    
+    <script>
+        const API_BASE = '/api';
+        let authToken = localStorage.getItem('adminToken');
+        
+        // 初期化
+        if (authToken) {
+            checkAuth();
+        }
+        
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showPromptSection();
+                    loadPrompts();
+                } else {
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.token;
+                    localStorage.setItem('adminToken', authToken);
+                    showPromptSection();
+                    loadPrompts();
+                } else {
+                    showStatus('パスワードが正しくありません', 'error');
+                }
+            } catch (error) {
+                showStatus('ログインエラーが発生しました', 'error');
+            }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('adminToken');
+            authToken = null;
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('promptSection').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+        
+        function showPromptSection() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('promptSection').style.display = 'block';
+        }
+        
+        async function loadPrompts() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/prompts`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const prompts = await response.json();
+                    renderPrompts(prompts);
+                } else {
+                    showStatus('プロンプトの読み込みに失敗しました', 'error');
+                }
+            } catch (error) {
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+        
+        function renderPrompts(prompts) {
+            const container = document.getElementById('promptCards');
+            container.innerHTML = '';
+            
+            const styleNames = {
+                aska: 'ASKA風',
+                kuwata: '桑田佳祐風',
+                influencer: 'インフルエンサー風',
+                omae: '大前研一風',
+                instagram: 'インスタグラム投稿用'
+            };
+            
+            prompts.forEach(prompt => {
+                const card = document.createElement('div');
+                card.className = 'prompt-card';
+                card.innerHTML = `
+                    <div class="prompt-header">
+                        <span class="style-name">${styleNames[prompt.style]}</span>
+                        <span class="style-badge badge-${prompt.style}">${prompt.style}</span>
+                    </div>
+                    <textarea 
+                        class="prompt-textarea" 
+                        id="prompt-${prompt.style}"
+                        data-style="${prompt.style}"
+                    >${prompt.prompt}</textarea>
+                    <div class="updated-time">
+                        最終更新: ${new Date(prompt.updatedAt).toLocaleString('ja-JP')}
+                    </div>
+                    <div class="prompt-actions">
+                        <button class="btn btn-save" onclick="savePrompt('${prompt.style}')">
+                            保存
+                        </button>
+                        <button class="btn btn-reset" onclick="resetPrompt('${prompt.style}')">
+                            デフォルトに戻す
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        async function savePrompt(style) {
+            const textarea = document.getElementById(`prompt-${style}`);
+            const prompt = textarea.value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/prompts/${style}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                if (response.ok) {
+                    showStatus('プロンプトを保存しました', 'success');
+                    loadPrompts(); // リロードして更新時刻を反映
+                } else {
+                    showStatus('保存に失敗しました', 'error');
+                }
+            } catch (error) {
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+        
+        async function resetPrompt(style) {
+            if (!confirm(`${style}のプロンプトをデフォルトに戻しますか？`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/prompts/${style}/reset`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showStatus('デフォルトに戻しました', 'success');
+                    loadPrompts();
+                } else {
+                    showStatus('リセットに失敗しました', 'error');
+                }
+            } catch (error) {
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+        
+        async function resetAllPrompts() {
+            if (!confirm('すべてのプロンプトをデフォルトに戻しますか？')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/prompts/reset-all`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showStatus('すべてのプロンプトをデフォルトに戻しました', 'success');
+                    loadPrompts();
+                } else {
+                    showStatus('リセットに失敗しました', 'error');
+                }
+            } catch (error) {
+                showStatus('エラーが発生しました', 'error');
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
