@@ -297,9 +297,8 @@
         function handleLogout() {
             localStorage.removeItem('adminToken');
             authToken = null;
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('promptSection').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
+            // トップページにリダイレクト
+            window.location.href = '/';
         }
         
         function showPromptSection() {
