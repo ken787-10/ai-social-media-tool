@@ -9,10 +9,29 @@ import { downloadLineImage, convertBufferToBase64DataUrl } from '../utils/imageD
 import { validateTextInput, sanitizeInput } from '../utils/validator';
 import logger from '../utils/logger';
 
-const client = new Client({
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || ''
-});
+// LINE Clientの初期化
+let client: Client;
+
+try {
+  const accessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+  const secret = process.env.LINE_CHANNEL_SECRET;
+  
+  if (!accessToken || !secret) {
+    throw new Error('LINE credentials are not properly configured');
+  }
+  
+  client = new Client({
+    channelAccessToken: accessToken,
+    channelSecret: secret
+  });
+} catch (error) {
+  logger.error('Failed to initialize LINE client', { error });
+  // クライアントが初期化できない場合のフォールバック
+  client = new Client({
+    channelAccessToken: '',
+    channelSecret: ''
+  });
+}
 
 export async function handleEvent(event: WebhookEvent): Promise<MessageAPIResponseBase | undefined> {
   if (event.type !== 'message') {

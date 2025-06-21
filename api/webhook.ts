@@ -3,21 +3,50 @@ import { middleware, WebhookEvent } from '@line/bot-sdk';
 import { handleEvent } from '../src/handlers/lineHandlers';
 import logger from '../src/utils/logger';
 import dotenv from 'dotenv';
+import { checkRequiredEnvVars } from '../src/utils/checkEnv';
 
 // 環境変数の読み込み
 dotenv.config();
 
+// 環境変数の検証
+const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+const channelSecret = process.env.LINE_CHANNEL_SECRET;
+
+if (!channelAccessToken || !channelSecret) {
+  logger.error('Missing required environment variables', {
+    hasAccessToken: !!channelAccessToken,
+    hasSecret: !!channelSecret
+  });
+}
+
 const middlewareConfig = {
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || ''
+  channelAccessToken: channelAccessToken || '',
+  channelSecret: channelSecret || ''
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // 環境変数のチェック
+  const envCheck = checkRequiredEnvVars();
+  if (!envCheck.valid) {
+    logger.error('Missing required environment variables', { missing: envCheck.missing });
+  }
+  
+  // 環境変数のチェック（デバッグ用）
   if (req.method === 'GET') {
+    const hasAccessToken = !!process.env.LINE_CHANNEL_ACCESS_TOKEN;
+    const hasSecret = !!process.env.LINE_CHANNEL_SECRET;
+    const hasOpenAI = !!process.env.OPENAI_API_KEY;
+    
     return res.status(200).json({ 
       status: 'ok', 
       message: 'LINE Style Tweet Bot is running',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      env: {
+        hasAccessToken,
+        hasSecret,
+        hasOpenAI,
+        nodeEnv: process.env.NODE_ENV
+      }
     });
   }
 

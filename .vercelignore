@@ -1,0 +1,32 @@
+# Ignore deleted files
+api/admin/[...path].ts
+api/admin/\[...path\].ts
+
+# Build artifacts
+dist/
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md

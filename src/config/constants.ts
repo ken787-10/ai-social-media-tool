@@ -2,8 +2,8 @@ import { MonthlyLimit, RateLimitConfig } from '../types';
 
 // 月次使用量制限
 export const MONTHLY_LIMIT: MonthlyLimit = {
-  maxTokens: 100000,    // 月10万トークン (約$2-3)
-  maxImages: 50,        // 月50枚の画像解析
+  maxTokens: 200000,    // 月20万トークン
+  maxImages: 200,       // 月200枚の画像解析
   alertThreshold: 0.8   // 80%で警告
 };
 
