@@ -34,10 +34,10 @@ export const CONTENT_LENGTH = {
 
 // Instagram用の文字数制限
 export const INSTAGRAM_CONTENT_LENGTH = {
-  '30': 120,
-  '50': 200,
-  '70': 280,
-  '100': 400
+  '30': 90,
+  '50': 150,
+  '70': 210,
+  '100': 300
 } as const;
 
 // スタイル名の日本語マッピング
