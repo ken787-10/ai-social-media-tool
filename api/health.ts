@@ -3,7 +3,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { checkPrompt } = req.query;
   
-  const health = {
+  const health: any = {
     status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'production',
@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const style = (checkPrompt as string) || 'kuwata';
       const prompt = promptStorage.getPrompt(style as any);
       
-      health['promptCheck'] = {
+      health.promptCheck = {
         style,
         promptLength: prompt?.length || 0,
         promptPreview: prompt?.substring(0, 100) + '...',
@@ -30,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         hasPositivity: prompt?.includes('ポジティブ表現の徹底') || false
       };
     } catch (error) {
-      health['promptCheck'] = {
+      health.promptCheck = {
         error: error instanceof Error ? error.message : 'Failed to check prompt'
       };
     }
