@@ -920,7 +920,10 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
       ? '/tmp/prompts.json'  // Vercel環境では/tmpを使用
       : path.join(process.cwd(), 'data', 'prompts.json');
     
-    // 初期化を非同期で実行
+    // デフォルトプロンプトを即座に初期化
+    this.initializeDefaults();
+    
+    // 追加の初期化を非同期で実行
     this.initializePromise = this.initialize();
   }
 
@@ -1019,17 +1022,29 @@ Instagramは最大400文字までの投稿が可能です。具体的なエピ�
   }
 
   getPrompt(style: StyleType): string {
-    // シンプルにデフォルトプロンプトを返す
+    // まずプロンプトマップから取得を試みる
+    const storedPrompt = this.prompts.get(style);
+    if (storedPrompt) {
+      logger.info('Getting prompt from storage', {
+        style,
+        promptLength: storedPrompt.prompt.length,
+        promptPreview: storedPrompt.prompt.substring(0, 50) + '...'
+      });
+      return storedPrompt.prompt;
+    }
+    
+    // なければデフォルトプロンプトを返す
     const prompt = this.defaultPrompts[style];
     
     // デバッグログ
-    logger.info('Getting prompt', {
+    logger.info('Getting default prompt', {
       style,
       promptLength: prompt?.length || 0,
-      promptPreview: prompt?.substring(0, 50) + '...'
+      promptPreview: prompt?.substring(0, 50) + '...',
+      hasKuwataUpdates: style === 'kuwata' && prompt?.includes('ひとりコックリさん')
     });
     
-    return prompt;
+    return prompt || this.defaultPrompts.kuwata; // フォールバック
   }
 
   async getAllPrompts(): Promise<StylePrompt[]> {
