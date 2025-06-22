@@ -113,15 +113,9 @@ async function handleTextMessage(event: any, userId: string): Promise<MessageAPI
     
     sessionManager.deleteSession(userId);
     
-    // 文字数情報を追加
-    const maxLength = style === 'instagram' 
-      ? INSTAGRAM_CONTENT_LENGTH[length]
-      : CONTENT_LENGTH[length];
-    const charCountInfo = `\n\n📝 文字数: ${content.length}/${maxLength}文字`;
-    
     return client.replyMessage(event.replyToken, {
       type: 'text',
-      text: content + charCountInfo
+      text: content
     });
   }
   
@@ -131,15 +125,9 @@ async function handleTextMessage(event: any, userId: string): Promise<MessageAPI
   
   const content = await generateContent(userText, style, length, userId);
   
-  // 文字数情報を追加
-  const maxLength = style === 'instagram' 
-    ? INSTAGRAM_CONTENT_LENGTH[length]
-    : CONTENT_LENGTH[length];
-  const charCountInfo = `\n\n📝 文字数: ${content.length}/${maxLength}文字`;
-  
   return client.replyMessage(event.replyToken, {
     type: 'text',
-    text: content + charCountInfo
+    text: content
   });
 }
 
