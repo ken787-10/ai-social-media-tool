@@ -5,6 +5,15 @@
     },
     "api/admin/*.ts": {
       "maxDuration": 10
+    },
+    "api/debug-prompt.ts": {
+      "maxDuration": 10
+    },
+    "api/test-kuwata-prompt.ts": {
+      "maxDuration": 10
+    },
+    "api/debug/*.ts": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
