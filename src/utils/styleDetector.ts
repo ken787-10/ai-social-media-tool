@@ -30,12 +30,13 @@ export function detectStyle(text: string): StyleType {
   // ミッションインポッシブル風の検出
   if (lowerText.includes('ミッション') || lowerText.includes('mission') || 
       lowerText.includes('トム') || lowerText.includes('トムクルーズ') || 
-      lowerText.includes('imp') || lowerText.includes('インポッシブル')) {
+      lowerText.includes('imp') || lowerText.includes('インポッシブル') ||
+      lowerText.includes('mip')) {
     return 'mission';
   }
   
-  // デフォルトはミッションインポッシブル風
-  return 'mission';
+  // デフォルトは桑田風
+  return 'kuwata';
 }
 
 export function detectContentLength(text: string): keyof typeof import('../config/constants')['CONTENT_LENGTH'] {
